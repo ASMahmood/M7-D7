@@ -11,6 +11,7 @@ import OtherProfile from "./components/OtherProfile";
 import FeedPage from "./components/FeedPage";
 import SignIn from "./components/SignIn";
 import Register from "./components/Register";
+import Chat from "./components/Chat";
 
 const exclusionArray = ["/", "/register"];
 
@@ -29,6 +30,7 @@ class App extends React.Component {
         {exclusionArray.indexOf(this.props.location.pathname) < 0 && <Footer />}
         <Route path="/" exact component={SignIn} />
         <Route path="/register" exact component={Register} />
+        <Chat />
       </>
     );
   }

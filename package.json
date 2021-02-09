@@ -22,6 +22,7 @@
     "react-scripts": "4.0.1",
     "react-tenor": "^2.2.0",
     "serve": "^11.3.2",
+    "socket.io-client": "^2.3.0",
     "tenor": "^1.0.1",
     "web-vitals": "^0.2.4"
   },
