@@ -36,9 +36,13 @@ export default function Chat() {
       setGlobalChat((globalChat) => globalChat.concat(msg))
     );
     socket.on("chatmessage", (text) =>
-      setAllMessages((messages) => messages.concat(text))
+      setAllMessages((allMessages) => allMessages.concat(text))
     );
   }, []);
+
+  useEffect(() => {
+    setCurrentMessages(allMessages.filter((msg) => msg.from === recipient));
+  }, [recipient]);
 
   const sendMessage = (e) => {
     e.preventDefault();
@@ -76,10 +80,7 @@ export default function Chat() {
               ? globalChat.map((message, index) => (
                   <li key={index}>
                     {console.log(message)}
-                    <strong>
-                      {message.from} to {message.to}
-                    </strong>{" "}
-                    {message.text}
+                    <strong>{message.user}</strong> {message.message}
                   </li>
                 ))
               : currentMessages.map((message, index) => (
@@ -88,6 +89,7 @@ export default function Chat() {
                     <strong>
                       {message.from} to {message.to}
                     </strong>{" "}
+                    {message.msg}
                     {message.text}
                   </li>
                 ))}
