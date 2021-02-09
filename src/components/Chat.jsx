@@ -23,8 +23,19 @@ export default function Chat() {
       "https://striveschool-api.herokuapp.com/api/messages/" + username
     );
     let resp = await response.json();
-    console.log(resp);
-    setAllMessages((allMessages) => allMessages.concat(resp));
+    console.log("HHHHHHHHHHHH", resp);
+    console.log("before", allMessages);
+    await setAllMessages(resp);
+    console.log("after", allMessages);
+    filterPrivate();
+  };
+
+  const filterPrivate = () => {
+    setCurrentMessages(
+      allMessages.filter(
+        (msg) => msg.from === recipient || msg.to === recipient
+      )
+    );
   };
 
   useEffect(() => {
@@ -35,14 +46,18 @@ export default function Chat() {
     socket.on("bmsg", (msg) =>
       setGlobalChat((globalChat) => globalChat.concat(msg))
     );
-    socket.on("chatmessage", (text) =>
-      setAllMessages((allMessages) => allMessages.concat(text))
-    );
+    socket.on("chatmessage", (msg) => {
+      setAllMessages((allMessages) => allMessages.concat(msg));
+      console.log(msg);
+    });
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   useEffect(() => {
-    setCurrentMessages(allMessages.filter((msg) => msg.from === recipient));
-  }, [recipient]);
+    filterPrivate();
+  }, [recipient, allMessages]);
 
   const sendMessage = (e) => {
     e.preventDefault();
@@ -56,6 +71,7 @@ export default function Chat() {
         text: message,
         to: recipient,
       });
+      getPast();
     }
     setMessage("");
   };
@@ -79,17 +95,12 @@ export default function Chat() {
             {recipient === "ALL-GLOBAL"
               ? globalChat.map((message, index) => (
                   <li key={index}>
-                    {console.log(message)}
                     <strong>{message.user}</strong> {message.message}
                   </li>
                 ))
               : currentMessages.map((message, index) => (
                   <li key={index}>
-                    {console.log(message)}
-                    <strong>
-                      {message.from} to {message.to}
-                    </strong>{" "}
-                    {message.msg}
+                    <strong>{message.from}</strong> {message.msg}
                     {message.text}
                   </li>
                 ))}

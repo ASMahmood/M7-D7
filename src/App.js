@@ -14,6 +14,7 @@ import Register from "./components/Register";
 import Chat from "./components/Chat";
 
 const exclusionArray = ["/", "/register"];
+const exclusionArray2ElectricBoogaloo = ["/", "/register", "/chat"];
 
 class App extends React.Component {
   render() {
@@ -27,7 +28,8 @@ class App extends React.Component {
         <Route path="/profile/:id" component={OtherProfile} />
         <Route path="/feed" exact render={(props) => <FeedPage {...props} />} />
         <Route path="/chat" exact component={Chat} />
-        {exclusionArray.indexOf(this.props.location.pathname) < 0 && <Footer />}
+        {exclusionArray2ElectricBoogaloo.indexOf(this.props.location.pathname) <
+          0 && <Footer />}
         <Route path="/" exact component={SignIn} />
         <Route path="/register" exact component={Register} />
       </>

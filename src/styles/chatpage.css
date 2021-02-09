@@ -1,6 +1,13 @@
 #chat-page {
   margin-top: 4rem;
+  max-height: 90vh;
+  text-overflow: ellipsis;
   background-color: white;
   border: 1px solid #deddda !important;
   border-radius: 15px;
+}
+#usersCol,
+#chatCol {
+  max-height: 90vh;
+  overflow-y: scroll;
 }
