@@ -11,11 +11,12 @@ let socket = io("https://striveschool-api.herokuapp.com", connOpt);
 
 export default function Chat() {
   const [users, setUsers] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [currentMessages, setCurrentMessages] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
   const [username, setUsername] = useState("abdul1");
-  const [recipient, setRecipient] = useState("");
+  const [recipient, setRecipient] = useState("ALL-GLOBAL");
   const [message, setMessage] = useState("");
+  const [globalChat, setGlobalChat] = useState([]);
 
   const getPast = async () => {
     let response = await fetch(
@@ -31,18 +32,27 @@ export default function Chat() {
     getPast();
     socket.on("list", (list) => setUsers(list));
     socket.emit("setUsername", { username: username });
+    socket.on("bmsg", (msg) =>
+      setGlobalChat((globalChat) => globalChat.concat(msg))
+    );
     socket.on("chatmessage", (text) =>
-      setMessages((messages) => messages.concat(text))
+      setAllMessages((messages) => messages.concat(text))
     );
   }, []);
 
   const sendMessage = (e) => {
     e.preventDefault();
-
-    socket.emit("chatmessage", {
-      text: message,
-      to: recipient,
-    });
+    if (recipient === "ALL-GLOBAL") {
+      socket.emit("bmsg", {
+        user: username,
+        message: message,
+      });
+    } else {
+      socket.emit("chatmessage", {
+        text: message,
+        to: recipient,
+      });
+    }
     setMessage("");
   };
   return (
@@ -50,6 +60,7 @@ export default function Chat() {
       <Row>
         <Col xs={5} id="usersCol">
           <ul>
+            <li onClick={() => setRecipient("ALL-GLOBAL")}>Global</li>
             {users.length > 0 &&
               users.map((user, index) => (
                 <li key={index} onClick={() => setRecipient(user)}>
@@ -61,15 +72,25 @@ export default function Chat() {
         <Col xs={7} id="chatCol">
           <h6>CHATTING TO {recipient}</h6>
           <ul>
-            {messages.map((message, index) => (
-              <li key={index}>
-                {console.log(message)}
-                <strong>
-                  {message.from} to {message.to}
-                </strong>{" "}
-                {message.text}
-              </li>
-            ))}
+            {recipient === "ALL-GLOBAL"
+              ? globalChat.map((message, index) => (
+                  <li key={index}>
+                    {console.log(message)}
+                    <strong>
+                      {message.from} to {message.to}
+                    </strong>{" "}
+                    {message.text}
+                  </li>
+                ))
+              : currentMessages.map((message, index) => (
+                  <li key={index}>
+                    {console.log(message)}
+                    <strong>
+                      {message.from} to {message.to}
+                    </strong>{" "}
+                    {message.text}
+                  </li>
+                ))}
           </ul>
           <form id="chat" onSubmit={sendMessage}>
             <input
